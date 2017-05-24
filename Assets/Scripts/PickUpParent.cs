@@ -30,7 +30,7 @@ public class PickUpParent : MonoBehaviour
 	void Update ()
     {
         //catch the input
-		if(device.GetTouch(SteamVR_Controller.ButtonMask.Touchpad))
+		if(device.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
         {
             resetFlag = true;
             pickableObject.transform.position = pickableObjectResetPosition;
@@ -54,7 +54,7 @@ public class PickUpParent : MonoBehaviour
 
         if(other.attachedRigidbody != null)
         {
-            if (device.GetTouch(SteamVR_Controller.ButtonMask.Trigger))
+            if (device.GetPress(SteamVR_Controller.ButtonMask.Trigger))
             {
                 Debug.Log("Trigger touched during collision with " + other.name);
                 other.attachedRigidbody.isKinematic = true;
