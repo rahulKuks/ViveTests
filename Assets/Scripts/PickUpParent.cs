@@ -8,6 +8,10 @@ public class PickUpParent : MonoBehaviour
 {
     SteamVR_TrackedObject trackedObj;
     SteamVR_Controller.Device device;
+    bool resetFlag;
+    Vector3 pickableObjectResetPosition;
+    [SerializeField]
+    GameObject pickableObject;
 
     private void Awake()
     {
@@ -17,14 +21,32 @@ public class PickUpParent : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+        pickableObjectResetPosition = pickableObject.transform.position;
         device = SteamVR_Controller.Input((int)trackedObj.index);
+        resetFlag = false;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-		
+        //catch the input
+		if(device.GetTouch(SteamVR_Controller.ButtonMask.Touchpad))
+        {
+            resetFlag = true;
+            pickableObject.transform.position = pickableObjectResetPosition;
+        }
 	}
+
+    void FixedUpdate()
+    {
+        if(resetFlag)
+        {
+            Rigidbody rb = pickableObject.GetComponent<Rigidbody>();
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            resetFlag = false;
+        }
+    }
 
     private void OnTriggerStay(Collider other)
     {
@@ -53,7 +75,18 @@ public class PickUpParent : MonoBehaviour
 
     private void ThrowObject(Rigidbody objectRigidBody)
     {
-        objectRigidBody.velocity = device.velocity;
-        objectRigidBody.angularVelocity = device.angularVelocity;
+        Transform origin = trackedObj.origin ? trackedObj.origin : trackedObj.transform.parent;
+
+        if (origin != null)
+        {
+            objectRigidBody.velocity = origin.TransformVector(device.velocity);
+            objectRigidBody.angularVelocity = origin.TransformVector(device.angularVelocity);
+        }
+        else
+        {
+            objectRigidBody.velocity = device.velocity;
+            objectRigidBody.angularVelocity = device.angularVelocity;
+        }
+        
     }
 }
