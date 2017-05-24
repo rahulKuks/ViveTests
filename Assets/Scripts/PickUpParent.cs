@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,18 +30,30 @@ public class PickUpParent : MonoBehaviour
     {
         Debug.Log("Trigger collision with " + other.name);
 
-        if(device.GetTouch(SteamVR_Controller.ButtonMask.Trigger))
+        if(other.attachedRigidbody != null)
         {
-            Debug.Log("Trigger touched during collision with " + other.name);
-            other.attachedRigidbody.isKinematic = true;
-            other.gameObject.transform.SetParent(this.transform);
-        }
+            if (device.GetTouch(SteamVR_Controller.ButtonMask.Trigger))
+            {
+                Debug.Log("Trigger touched during collision with " + other.name);
+                other.attachedRigidbody.isKinematic = true;
+                other.gameObject.transform.SetParent(this.transform);
+            }
 
-        if(device.GetTouchUp(SteamVR_Controller.ButtonMask.Trigger))
-        {
-            Debug.Log("Trigger up event during collision with " + other.name);
-            other.gameObject.transform.SetParent(null);
-            other.attachedRigidbody.isKinematic = false;
+            if (device.GetTouchUp(SteamVR_Controller.ButtonMask.Trigger))
+            {
+                Debug.Log("Trigger up event during collision with " + other.name);
+                other.gameObject.transform.SetParent(null);
+                other.attachedRigidbody.isKinematic = false;
+
+                ThrowObject(other.attachedRigidbody);
+            }
         }
+       
+    }
+
+    private void ThrowObject(Rigidbody objectRigidBody)
+    {
+        objectRigidBody.velocity = device.velocity;
+        objectRigidBody.angularVelocity = device.angularVelocity;
     }
 }
