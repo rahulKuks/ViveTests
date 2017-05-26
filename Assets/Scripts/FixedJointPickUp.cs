@@ -44,6 +44,7 @@ public class FixedJointPickUp : MonoBehaviour {
             Rigidbody pickableObjectRigidBody = pickableObject.GetComponent<Rigidbody>();
             pickableObjectRigidBody.velocity = Vector3.zero;
             pickableObjectRigidBody.angularVelocity = Vector3.zero;
+            resetFlag = false;
         }
     }
 
